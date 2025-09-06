@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clinical Trial Form</title>
+</head>
+<body>
+    <h1>Clinical Trial Data Entry</h1>
+    
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <!-- Name -->
+        <div>
+            {{ form.name.label }}<br>
+            {{ form.name(size=30) }}
+            {% for error in form.name.errors %}
+                <span style="color:red;">[{{ error }}]</span>
+            {% endfor %}
+        </div><br>
+
+        <!-- Conditional Procedure -->
+        <div>
+            {{ form.conditional_procedure.label }}<br>
+            {{ form.conditional_procedure(size=40) }}
+            {% for error in form.conditional_procedure.errors %}
+                <span style="color:red;">[{{ error }}]</span>
+            {% endfor %}
+        </div><br>
+
+        <!-- Budget -->
+        <div>
+            {{ form.budget.label }}<br>
+            {{ form.budget() }}
+        </div><br>
+
+        <!-- Screening Visit -->
+        <div>
+            {{ form.screening_visit.label }}<br>
+            {{ form.screening_visit() }}
+        </div><br>
+
+        <!-- Baseline Visit -->
+        <div>
+            {{ form.baseline_visit.label }}<br>
+            {{ form.baseline_visit() }}
+        </div><br>
+
+        <!-- Visits 1–10 -->
+        {% for i in range(1, 11) %}
+        <div>
+            {{ getattr(form, 'visit' ~ i).label }}<br>
+            {{ getattr(form, 'visit' ~ i)() }}
+        </div><br>
+        {% endfor %}
+
+        <!-- End of Treatment -->
+        <div>
+            {{ form.end_of_treatment.label }}<br>
+            {{ form.end_of_treatment() }}
+        </div><br>
+
+        <!-- Follow up -->
+        <div>
+            {{ form.follow_up.label }}<br>
+            {{ form.follow_up() }}
+        </div><br>
+
+        <!-- End of Study -->
+        <div>
+            {{ form.end_of_study.label }}<br>
+            {{ form.end_of_study() }}
+        </div><br>
+
+        <!-- Effective Date -->
+        <div>
+            {{ form.effective_date.label }}<br>
+            {{ form.effective_date() }}
+        </div><br>
+
+        <!-- Term Date -->
+        <div>
+            {{ form.term_date.label }}<br>
+            {{ form.term_date() }}
+        </div><br>
+
+        <!-- Site ID -->
+        <div>
+            {{ form.site_id.label }}<br>
+            {{ form.site_id() }}
+        </div><br>
+
+        <!-- Submit -->
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+</html>

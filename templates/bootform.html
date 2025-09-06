@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Clinical Trial Form</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-4">
+    <h2 class="text-center text-primary mb-4">Clinical Trial Data Entry</h2>
+
+    <form method="POST" action="/form">
+      <!-- Conditional Procedure -->
+      <div class="mb-3">
+        <label class="form-label">Conditional Procedure</label>
+        <input type="text" class="form-control" name="conditional_procedure" required>
+      </div>
+
+      <!-- Budget -->
+      <div class="mb-3">
+        <label class="form-label">Budget</label>
+        <input type="number" class="form-control" name="budget" step="0.01" required>
+      </div>
+
+      <!-- Visits -->
+      <h4 class="mt-4">Visits</h4>
+      <div class="row">
+        {% for i in range(1, 11) %}
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Visit {{ i }}</label>
+          <input type="number" class="form-control" name="visit_{{ i }}">
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Screening, Baseline, Endpoints -->
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Screening Visit</label>
+          <input type="number" class="form-control" name="screening_visit">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Baseline Visit</label>
+          <input type="number" class="form-control" name="baseline_visit">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">End of Treatment</label>
+          <input type="number" class="form-control" name="end_of_treatment">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Follow Up</label>
+          <input type="number" class="form-control" name="follow_up">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">End of Study</label>
+          <input type="number" class="form-control" name="end_of_study">
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <h4 class="mt-4">Dates</h4>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Effective Date</label>
+          <input type="date" class="form-control" name="effective_date">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Term Date</label>
+          <input type="date" class="form-control" name="term_date">
+        </div>
+      </div>
+
+      <!-- Site ID -->
+      <div class="mb-3">
+        <label class="form-label">Site ID</label>
+        <input type="number" class="form-control" name="site_id">
+      </div>
+
+      <!-- Submit -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary px-5">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

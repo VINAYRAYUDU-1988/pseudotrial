@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Clinical Trial Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-4">
+    <h2 class="text-center text-success mb-4">Clinical Trial Dashboard</h2>
+
+    <!-- Display Submitted Data -->
+    <div class="card shadow-sm p-3">
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Field</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Conditional Procedure</td><td>{{ data.conditional_procedure }}</td></tr>
+          <tr><td>Budget</td><td>{{ data.budget }}</td></tr>
+          <tr><td>Screening Visit</td><td>{{ data.screening_visit }}</td></tr>
+          <tr><td>Baseline Visit</td><td>{{ data.baseline_visit }}</td></tr>
+
+          {% for i in range(1, 11) %}
+          <tr><td>Visit {{ i }}</td><td>{{ data['visit_' ~ i] }}</td></tr>
+          {% endfor %}
+
+          <tr><td>End of Treatment</td><td>{{ data.end_of_treatment }}</td></tr>
+          <tr><td>Follow Up</td><td>{{ data.follow_up }}</td></tr>
+          <tr><td>End of Study</td><td>{{ data.end_of_study }}</td></tr>
+          <tr><td>Effective Date</td><td>{{ data.effective_date }}</td></tr>
+          <tr><td>Term Date</td><td>{{ data.term_date }}</td></tr>
+          <tr><td>Site ID</td><td>{{ data.site_id }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Back to Form -->
+    <div class="text-center mt-3">
+      <a href="{{ url_for('form') }}" class="btn btn-primary">Back to Form</a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
