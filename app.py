@@ -149,6 +149,9 @@ def chart():
     labels = ["Site A", "Site B", "Site C", "Site D"]
     values = [20000, 35000, 15000, 50000]
     return render_template("chart.html", labels=labels, values=values)
-
+# Expose the app for Gunicorn / Vercel
+if __name__ == "__main__":
+    # Only used when running locally
+    app.run(host="0.0.0.0", port=5000, debug=True)
 
 
