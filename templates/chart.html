@@ -33,11 +33,11 @@
     </div>
 
     <script>
-    // Get data passed from Flask
-    const chartLabels = { labels , safe };
-    const chartValues = { values , safe };
+    // ✅ Safely get data passed from Flask
+    const chartLabels = JSON.parse('{{ labels | tojson | safe }}');
+    const chartValues = JSON.parse('{{ values | tojson | safe }}');
 
-    const ctx = document.getElementById('myChart');
+    const ctx = document.getElementById('myChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -67,6 +67,6 @@
             }
         }
     });
-</script>
+    </script>
 </body>
 </html>

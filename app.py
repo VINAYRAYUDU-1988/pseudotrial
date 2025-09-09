@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from starter.forms import MyForm
 from flask_sqlalchemy import SQLAlchemy
@@ -8,23 +9,28 @@ import datetime
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Encode your password
+# Database credentials
 username = "postgres"
-password = quote_plus("Vzu542@1988")   # Original password with @
+password = quote_plus("Vzu542@1988")   # Encodes special characters
 host = "localhost"
 port = "5432"
 database = "postgres"
 
-# Build the connection string safely
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{username}:{password}@{host}:{port}/{database}"
+# App config (use env vars if available, else fallback to local Postgres)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_secret_key')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'POSTGRES_URL',
+    f"postgresql://{username}:{password}@{host}:{port}/{database}"
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# ----------------- MODELS -----------------
 class ClinicalVisit(db.Model):
     __tablename__ = "clinical_visits"
 
-    id = db.Column(db.Integer, primary_key=True)  # Auto primary key
+    id = db.Column(db.Integer, primary_key=True)
     conditional_procedure = db.Column("Conditional Procedure", db.Text)
     budget = db.Column("Budget", db.Numeric)
     screening_visit = db.Column("Screening Visit", db.Numeric)
@@ -49,15 +55,21 @@ class ClinicalVisit(db.Model):
     def __repr__(self):
         return f"<ClinicalVisit site_id={self.site_id}>"
 
-# Create the table(s)
+# ----------------- DB INIT -----------------
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 with app.app_context():
     db.create_all()
-#Example posts dictionary
+
+# ----------------- EXAMPLE POSTS -----------------
 posts = {
     1: {'title': 'https://pseudotrial.com/', 'content': 'Visit our homepage'},
-    2: {'title': 'Clinical Trial Payment and Reconciliation Solution', 'content': 'Learn more about our solution here.'} # type: ignore
+    2: {'title': 'Clinical Trial Payment and Reconciliation Solution', 'content': 'Learn more about our solution here.'}
 }
 
+# ----------------- ROUTES -----------------
 @app.route('/')
 def home():
     return render_template("home.html")
@@ -94,14 +106,12 @@ def form_dashboard():
             'site_id': form.site_id.data,
         }
         for i in range(1, 11):
-            form_data[f'visit_{i}'] = getattr(form, f'visit{i}').data
+            form_data[f'visit_{i}'] = getattr(form, f'visit_{i}').data
 
-        # Store in session
         session['form_data'] = form_data
         return redirect(url_for('dashboard'))
 
     return render_template('form.html', form=form)
-
 
 @app.route('/dashboard')
 def dashboard():
@@ -111,36 +121,22 @@ def dashboard():
 @app.route('/form_success', methods=['GET', 'POST'])
 def form_success():
     if request.method == 'POST':
-        # Collect form data from request
-        form_data = {
-            'conditional_procedure': request.form.get('conditional_procedure'),
-            'budget': request.form.get('budget'),
-            'screening_visit': request.form.get('screening_visit'),
-            'baseline_visit': request.form.get('baseline_visit'),
-            'end_of_treatment': request.form.get('end_of_treatment'),
-            'follow_up': request.form.get('follow_up'),
-            'end_of_study': request.form.get('end_of_study'),
-            'effective_date': request.form.get('effective_date'),
-            'term_date': request.form.get('term_date'),
-            'site_id': request.form.get('site_id'),
-        }
+        form_data = {key: request.form.get(key) for key in [
+            'conditional_procedure', 'budget', 'screening_visit', 'baseline_visit',
+            'end_of_treatment', 'follow_up', 'end_of_study',
+            'effective_date', 'term_date', 'site_id'
+        ]}
         for i in range(1, 11):
-            form_data[f'visit_{i}'] = request.form.get(f'visit{i}')
+            form_data[f'visit_{i}'] = request.form.get(f'visit_{i}')
 
-        # 🔹 (2) Convert dates from string -> datetime.date
         if form_data['effective_date']:
             form_data['effective_date'] = datetime.datetime.strptime(
-                form_data['effective_date'], "%Y-%m-%d"
-            ).date()
+                form_data['effective_date'], "%Y-%m-%d").date()
         if form_data['term_date']:
             form_data['term_date'] = datetime.datetime.strptime(
-                form_data['term_date'], "%Y-%m-%d"
-            ).date()
+                form_data['term_date'], "%Y-%m-%d").date()
 
-        # 🔹 Create the database object
         new_visit = ClinicalVisit(**form_data)
-
-        # 🔹 (3) Try to save with error handling
         try:
             db.session.add(new_visit)
             db.session.commit()
@@ -150,20 +146,15 @@ def form_success():
 
         return render_template('success.html', data=form_data)
 
-    # GET request fallback → show form again
     return render_template('form.html', form=MyForm())
-
-@app.route('/')
-def home():
-    return "Welcome to the Peudotrial chart.js Example!"
 
 @app.route('/chart')
 def chart():
-    # Example data (replace with DB query later)
     labels = ["Site A", "Site B", "Site C", "Site D"]
     values = [20000, 35000, 15000, 50000]
-
     return render_template("chart.html", labels=labels, values=values)
 
+# ----------------- MAIN -----------------
 if __name__ == "__main__":
     app.run(debug=True)
+
