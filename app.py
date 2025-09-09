@@ -56,10 +56,6 @@ class ClinicalVisit(db.Model):
         return f"<ClinicalVisit site_id={self.site_id}>"
 
 # ----------------- DB INIT -----------------
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
 with app.app_context():
     db.create_all()
 
