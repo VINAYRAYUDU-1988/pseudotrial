@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from starter.forms import MyForm
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import quote_plus
+from sqlalchemy.exc import IntegrityError
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -109,6 +111,7 @@ def dashboard():
 @app.route('/form_success', methods=['GET', 'POST'])
 def form_success():
     if request.method == 'POST':
+        # Collect form data from request
         form_data = {
             'conditional_procedure': request.form.get('conditional_procedure'),
             'budget': request.form.get('budget'),
@@ -124,10 +127,43 @@ def form_success():
         for i in range(1, 11):
             form_data[f'visit_{i}'] = request.form.get(f'visit{i}')
 
+        # 🔹 (2) Convert dates from string -> datetime.date
+        if form_data['effective_date']:
+            form_data['effective_date'] = datetime.datetime.strptime(
+                form_data['effective_date'], "%Y-%m-%d"
+            ).date()
+        if form_data['term_date']:
+            form_data['term_date'] = datetime.datetime.strptime(
+                form_data['term_date'], "%Y-%m-%d"
+            ).date()
+
+        # 🔹 Create the database object
+        new_visit = ClinicalVisit(**form_data)
+
+        # 🔹 (3) Try to save with error handling
+        try:
+            db.session.add(new_visit)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return "⚠️ Unique constraint failed! Maybe this site_id already exists."
+
         return render_template('success.html', data=form_data)
 
+    # GET request fallback → show form again
     return render_template('form.html', form=MyForm())
 
+@app.route('/')
+def home():
+    return "Welcome to the Peudotrial chart.js Example!"
+
+@app.route('/chart')
+def chart():
+    # Example data (replace with DB query later)
+    labels = ["Site A", "Site B", "Site C", "Site D"]
+    values = [20000, 35000, 15000, 50000]
+
+    return render_template("chart.html", labels=labels, values=values)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pseudotrial | Charts</title>
+    <!-- Load Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            width: 80%;
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h2>Clinical Trial Budget Overview</h2>
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+    // Get data passed from Flask
+    const chartLabels = { labels , safe };
+    const chartValues = { values , safe };
+
+    const ctx = document.getElementById('myChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Budget per Site',
+                data: chartValues,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ],
+                borderColor: 'rgba(0,0,0,0.1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true, position: 'top' },
+                title: { display: true, text: 'Site Budgets (₹)' }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+</body>
+</html>
