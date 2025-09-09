@@ -150,7 +150,5 @@ def chart():
     values = [20000, 35000, 15000, 50000]
     return render_template("chart.html", labels=labels, values=values)
 
-# ----------------- MAIN -----------------
-if __name__ == "__main__":
-    app.run(debug=True)
+
 
